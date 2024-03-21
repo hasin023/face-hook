@@ -2,18 +2,38 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import Field from "../common/Field";
 import { useAuth } from "../../hooks/useAuth";
+import api from "../../api/api";
 
 const LoginForm = () => {
 
     const navigate = useNavigate();
     const { setAuth } = useAuth();
-    const { register, handleSubmit, formState: { errors }, } = useForm();
+    const { register, handleSubmit, formState: { errors }, setError } = useForm();
 
-    const submitForm = (formData) => {
+    const submitForm = async (formData) => {
         console.log(formData);
-        const user = { ...formData };
-        setAuth({ user });
-        navigate("/");
+
+        try {
+            const response = await api.post('/auth/login', formData);
+
+            if (response.status !== 200) {
+                throw new Error("Error! Please try again later");
+            }
+
+            const { token, user } = response.data;
+            if (token) {
+                const authToken = token.token;
+                const refreshToken = token.refreshToken;
+
+                // console.log(authToken, refreshToken);
+                setAuth({ user, authToken, refreshToken });
+                navigate("/");
+            }
+
+        } catch (error) {
+            console.error(error);
+            setError("root.invalid", { type: 'invalid', message: "Invalid email or password" });
+        }
     };
 
     return (
@@ -40,6 +60,7 @@ const LoginForm = () => {
                 />
             </Field>
 
+            <p>{errors?.root?.invalid?.message}</p>
             <Field>
                 <button
                     className="auth-input bg-lwsGreen font-bold text-deepDark transition-all hover:opacity-90"
