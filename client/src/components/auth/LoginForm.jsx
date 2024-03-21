@@ -25,7 +25,6 @@ const LoginForm = () => {
                 const authToken = token.token;
                 const refreshToken = token.refreshToken;
 
-                // console.log(authToken, refreshToken);
                 setAuth({ user, authToken, refreshToken });
                 navigate("/");
             }
@@ -60,7 +59,7 @@ const LoginForm = () => {
                 />
             </Field>
 
-            <p>{errors?.root?.invalid?.message}</p>
+            <p className="pb-2 text-red-500">{errors?.root?.invalid?.message}</p>
             <Field>
                 <button
                     className="auth-input bg-lwsGreen font-bold text-deepDark transition-all hover:opacity-90"
