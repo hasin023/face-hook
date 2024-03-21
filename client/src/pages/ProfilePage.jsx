@@ -1,31 +1,37 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import useAxios from '../hooks/useAxios';
 import { useAuth } from "../hooks/useAuth";
 import Loader from "../components/common/Loader";
+import useProfile from "../hooks/useProfile";
+import { actions } from "../actions/actions";
 
 const ProfilePage = () => {
 
-  const [user, setUser] = useState(null);
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { state, dispatch } = useProfile();
 
   const { api } = useAxios();
   const { auth } = useAuth();
 
   useEffect(() => {
+    dispatch({ type: actions.profile.DATA_FETCHING });
 
     const fetchProfile = async () => {
       try {
         const response = await api.get(`/profile/${auth?.user?.id}`);
-        setUser(response?.data?.user);
-        setPosts(response?.data?.posts);
-        setLoading(false);
+
+        if (response.status === 200) {
+          dispatch({
+            type: actions.profile.DATA_FETCHED,
+            data: response.data,
+          });
+        }
+
       } catch (error) {
         console.error(error);
-        setError(error);
-      } finally {
-        setLoading(false);
+        dispatch({
+          type: actions.profile.DATA_FETCH_ERROR,
+          error: error.message,
+        });
       }
     }
 
@@ -34,11 +40,11 @@ const ProfilePage = () => {
 
   // console.log(user, posts);
 
-  if (error) {
-    return <div>Error: {error.message}</div>;
+  if (state.error) {
+    return <div>Error: {state.error.message}</div>;
   }
 
-  if (loading) {
+  if (state.loading) {
     return <Loader />;
   }
 
@@ -50,8 +56,8 @@ const ProfilePage = () => {
         >
           <img
             className="max-w-full"
-            src={user.avatar}
-            alt={user.firstName + " " + user.lastName}
+            src={state?.user?.avatar}
+            alt={state?.user?.firstName + " " + state?.user?.lastName}
           />
 
           <button
@@ -62,15 +68,15 @@ const ProfilePage = () => {
         </div>
         <div>
           <h3 className="text-2xl font-semibold text-white lg:text-[28px]">
-            {user.firstName}&nbsp;{user.lastName}
+            {state?.user?.firstName}&nbsp;{state?.user?.lastName}
           </h3>
-          <p className="leading-[231%] lg:text-lg">{user.email}</p>
+          <p className="leading-[231%] lg:text-lg">{state?.user?.email}</p>
         </div>
 
         <div className="mt-4 flex items-start gap-2 lg:mt-6">
           <div className="flex-1">
             <p className="leading-[188%] text-gray-400 lg:text-lg">
-              {user.bio || "Add a bio"}
+              {state?.user?.bio || "Add a bio"}
             </p>
           </div>
           <button className="flex-center h-7 w-7 rounded-full">

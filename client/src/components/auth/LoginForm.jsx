@@ -11,7 +11,7 @@ const LoginForm = () => {
     const { register, handleSubmit, formState: { errors }, setError } = useForm();
 
     const submitForm = async (formData) => {
-        console.log(formData);
+        // console.log(formData);
 
         try {
             const response = await api.post('/auth/login', formData);
