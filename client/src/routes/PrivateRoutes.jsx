@@ -1,7 +1,6 @@
 import { useAuth } from "../hooks/useAuth";
 import { Outlet, Navigate } from "react-router-dom";
 import Header from '../components/common/Header'
-import Footer from "../components/common/Footer";
 
 const PrivateRoutes = () => {
 
@@ -19,9 +18,6 @@ const PrivateRoutes = () => {
                                     <Outlet />
                                 </div>
                             </main>
-                            <div className="flex flex-col justify-end h-lvh">
-                                <Footer />
-                            </div>
                         </>
                     ) : (
                         <Navigate to="/login" />
