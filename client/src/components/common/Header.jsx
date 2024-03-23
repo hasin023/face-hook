@@ -6,10 +6,14 @@ import Avatar from '../../assets/images/avatars/avatar_1.png';
 import { Link } from 'react-router-dom';
 import Logout from '../auth/Logout';
 import { useAuth } from '../../hooks/useAuth';
+import useProfile from '../../hooks/useProfile';
 
 const Header = () => {
 
     const { auth } = useAuth();
+    const { state } = useProfile();
+
+    const user = state?.user ?? auth?.user;
 
     return (
         <nav className="sticky top-0 z-50 border-b border-[#3F3F3F] bg-[#1E1F24] py-4">
@@ -30,9 +34,11 @@ const Header = () => {
                     <Logout />
 
                     <button className="flex-center !ml-8 gap-3">
-                        <span className="text-lg font-medium lg:text-xl">{auth?.user?.firstName}</span>
+                        <span className="text-lg font-medium lg:text-xl">
+                            {user?.firstName} {user?.lastName}
+                        </span>
                         <img className="max-h-[32px] max-w-[32px] lg:max-h-[44px] lg:max-w-[44px]"
-                            src={Avatar} alt="" />
+                            src={`http://localhost:3000/${user.avatar}`} alt="" />
                     </button>
                 </div>
 
